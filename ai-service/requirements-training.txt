@@ -1,0 +1,22 @@
+# Intentionally outdated packages for SCA training ONLY.
+# PINNED with == (no ranges, no minimums).
+#
+# Install ONLY in isolated labs:
+#   pip install -r requirements-training.txt
+#
+# Replace with secure versions after exercises:
+#   pip install -r requirements.txt
+#
+# Categories → pinned package==version
+# - Vulnerable YAML / serialization-adjacent  → PyYAML==5.1
+# - Vulnerable HTTP client stack              → urllib3==1.24.2, requests==2.19.0
+# - Vulnerable crypto library                 → pycrypto==2.6.1
+# - Vulnerable file / imaging library         → Pillow==8.3.0
+# - Vulnerable JWT-adjacent stack (optional)  → pyjwt==1.7.1
+
+PyYAML==5.1
+urllib3==1.24.2
+requests==2.19.0
+Pillow==8.3.0
+pycrypto==2.6.1
+pyjwt==1.7.1

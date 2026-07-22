@@ -1,0 +1,8 @@
+# Activated when SPRING_PROFILES_ACTIVE includes "training"
+skybook:
+  training:
+    enabled: true
+
+logging:
+  level:
+    com.skybook.training: WARN

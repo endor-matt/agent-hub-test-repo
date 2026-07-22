@@ -1,0 +1,66 @@
+# SkyBook AI Backend — NOT production-secure (security training lab)
+spring:
+  application:
+    name: skybook-backend
+  # Default ON so intentional /training/** sinks are reachable for SCA/SAST labs.
+  # Disable with: SPRING_PROFILES_ACTIVE=default (or any profile that excludes "training")
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:training}
+  datasource:
+    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:skybook}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+    username: ${DB_USER:skybook}
+    password: ${DB_PASSWORD:skybook}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
+        format_sql: true
+    show-sql: false
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+    default-property-inclusion: non_null
+
+server:
+  port: ${SERVER_PORT:8080}
+  error:
+    include-message: always
+
+skybook:
+  jwt:
+    # TRAINING LAB ONLY — override via JWT_SECRET in real deployments
+    secret: ${JWT_SECRET:SkyBookLabOnlySecretKeyChangeMe_MustBeAtLeast256BitsLong!!}
+    access-token-minutes: ${JWT_ACCESS_MINUTES:30}
+    refresh-token-days: ${JWT_REFRESH_DAYS:7}
+  cors:
+    allowed-origins: ${CORS_ORIGINS:http://localhost:3000,http://localhost:5173}
+  ai:
+    base-url: ${AI_SERVICE_URL:http://localhost:8000}
+  training:
+    enabled: true
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    tags-sorter: alpha
+
+logging:
+  level:
+    com.skybook: INFO
+    org.springframework.security: INFO
+
+---
+spring:
+  config:
+    activate:
+      on-profile: training
+skybook:
+  training:
+    enabled: true

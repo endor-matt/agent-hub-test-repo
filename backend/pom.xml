@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.3.5</version>
+        <relativePath/>
+    </parent>
+
+    <groupId>com.skybook</groupId>
+    <artifactId>skybook-backend</artifactId>
+    <version>1.0.0-TRAINING</version>
+    <name>SkyBook AI Backend</name>
+    <description>Flight booking API — security research &amp; training lab (NOT production-secure)</description>
+
+    <properties>
+        <java.version>21</java.version>
+        <jjwt.version>0.12.6</jjwt.version>
+        <springdoc.version>2.6.0</springdoc.version>
+        <poi.version>5.3.0</poi.version>
+
+        <!--
+          TRAINING ONLY — pinned intentionally vulnerable versions for SCA demos.
+          Easy to remove: delete the training-vuln dependencies block and these properties.
+          Do NOT bump these unless updating the SECURITY_TRAINING.md CVE table.
+        -->
+        <skybook.vuln.log4j.version>2.14.1</skybook.vuln.log4j.version>
+        <skybook.vuln.jackson.version>2.9.10</skybook.vuln.jackson.version>
+        <skybook.vuln.commons-fileupload.version>1.3.1</skybook.vuln.commons-fileupload.version>
+        <skybook.vuln.httpclient.version>4.3.6</skybook.vuln.httpclient.version>
+        <skybook.vuln.commons-collections.version>3.2.1</skybook.vuln.commons-collections.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-aop</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-j</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-api</artifactId>
+            <version>${jjwt.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-impl</artifactId>
+            <version>${jjwt.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-jackson</artifactId>
+            <version>${jjwt.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <version>${springdoc.version}</version>
+        </dependency>
+
+        <!-- Excel export (audit dashboard) -->
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml</artifactId>
+            <version>${poi.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <!--
+          ============================================================
+          TRAINING ONLY — pinned vulnerable dependencies (SCA demos)
+          Declared on the default compile/runtime classpath so package
+          findings are present/reachable in the default lab build.
+          jackson-databind stays provided to avoid breaking Spring Boot 3's
+          managed Jackson (still visible to SCA at the pinned version).
+          ============================================================
+        -->
+        <!-- Vulnerable logging library: log4j-core 2.14.1 (CVE-2021-44228) -->
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>${skybook.vuln.log4j.version}</version>
+        </dependency>
+        <!-- Vulnerable JSON library: jackson-databind 2.9.10 (SCA pin; provided = not overriding Boot Jackson at runtime) -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${skybook.vuln.jackson.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <!-- Vulnerable file upload library: commons-fileupload 1.3.1 (CVE-2016-1000031) -->
+        <dependency>
+            <groupId>commons-fileupload</groupId>
+            <artifactId>commons-fileupload</artifactId>
+            <version>${skybook.vuln.commons-fileupload.version}</version>
+        </dependency>
+        <!-- Vulnerable HTTP client: httpclient 4.3.6 -->
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>${skybook.vuln.httpclient.version}</version>
+        </dependency>
+        <!-- Vulnerable serialization library: commons-collections 3.2.1 (gadget support for insecure deserialize demo) -->
+        <dependency>
+            <groupId>commons-collections</groupId>
+            <artifactId>commons-collections</artifactId>
+            <version>${skybook.vuln.commons-collections.version}</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                            <version>${lombok.version}</version>
+                        </path>
+                    </annotationProcessorPaths>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <excludes>
+                        <exclude>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                        </exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <!-- Intentionally vulnerable dependencies — TRAINING ONLY (SCA demos). Do not use outside isolated lab. -->
+    <profiles>
+        <profile>
+            <id>training</id>
+            <properties>
+                <spring.profiles.active>training</spring.profiles.active>
+            </properties>
+        </profile>
+        <profile>
+            <id>training-vuln-deps</id>
+            <!--
+              Legacy alias: vulnerable SCA deps are already on the default classpath.
+              jackson-databind 2.9.10 is still only provided in the main deps block;
+              this profile optionally force-resolves the same pins again for demos.
+            -->
+            <dependencies>
+                <dependency>
+                    <groupId>org.apache.logging.log4j</groupId>
+                    <artifactId>log4j-core</artifactId>
+                    <version>${skybook.vuln.log4j.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>com.fasterxml.jackson.core</groupId>
+                    <artifactId>jackson-databind</artifactId>
+                    <version>${skybook.vuln.jackson.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>commons-fileupload</groupId>
+                    <artifactId>commons-fileupload</artifactId>
+                    <version>${skybook.vuln.commons-fileupload.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>org.apache.httpcomponents</groupId>
+                    <artifactId>httpclient</artifactId>
+                    <version>${skybook.vuln.httpclient.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>commons-collections</groupId>
+                    <artifactId>commons-collections</artifactId>
+                    <version>${skybook.vuln.commons-collections.version}</version>
+                </dependency>
+            </dependencies>
+        </profile>
+    </profiles>
+</project>

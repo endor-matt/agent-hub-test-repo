@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  SkyBook AI — TRAINING ONLY SCA artifact list (pinned versions)
+  ==============================================================
+  Exact vulnerable versions for SCA demos. Kept in sync with
+  skybook.vuln.* properties in ../pom.xml.
+
+  Do not deploy outside an isolated lab.
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.skybook.training</groupId>
+    <artifactId>training-sca-artifacts</artifactId>
+    <version>1.0.0-TRAINING</version>
+    <packaging>pom</packaging>
+    <name>SkyBook Training SCA Artifacts</name>
+    <description>Pinned intentionally vulnerable dependencies for SCA training (NOT for production)</description>
+
+    <properties>
+        <!-- PINNED — do not use version ranges -->
+        <vuln.log4j.version>2.14.1</vuln.log4j.version>
+        <vuln.jackson.version>2.9.10</vuln.jackson.version>
+        <vuln.commons-fileupload.version>1.3.1</vuln.commons-fileupload.version>
+        <vuln.httpclient.version>4.3.6</vuln.httpclient.version>
+        <vuln.commons-collections.version>3.2.1</vuln.commons-collections.version>
+    </properties>
+
+    <dependencies>
+        <!-- Vulnerable logging library -->
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>${vuln.log4j.version}</version>
+        </dependency>
+        <!-- Vulnerable JSON parsing library -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${vuln.jackson.version}</version>
+        </dependency>
+        <!-- Vulnerable file upload library -->
+        <dependency>
+            <groupId>commons-fileupload</groupId>
+            <artifactId>commons-fileupload</artifactId>
+            <version>${vuln.commons-fileupload.version}</version>
+        </dependency>
+        <!-- Vulnerable HTTP client -->
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>${vuln.httpclient.version}</version>
+        </dependency>
+        <!-- Vulnerable serialization library -->
+        <dependency>
+            <groupId>commons-collections</groupId>
+            <artifactId>commons-collections</artifactId>
+            <version>${vuln.commons-collections.version}</version>
+        </dependency>
+    </dependencies>
+</project>
