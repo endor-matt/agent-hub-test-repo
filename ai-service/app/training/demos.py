@@ -144,10 +144,11 @@ def secure_subprocess(_: Settings = Depends(require_training)):
 # --- YAML / Pickle ---
 @router.post("/insecure/yaml")
 def insecure_yaml(payload: Chatty, _: Settings = Depends(require_training)):
-    """CWE-502 — yaml.load without SafeLoader."""
-    # INTENTIONALLY VULNERABLE
-    data = yaml.load(payload.message, Loader=yaml.Loader)  # noqa: S506
-    return {"notice": NOTICE, "cwe": "CWE-502", "parsed": str(data)}
+    """FIXED: safe_load only, no arbitrary object construction (was CWE-502)."""
+    # Remediated (AI SAST CWE-502): yaml.safe_load rejects Python object tags,
+    # matching /secure/yaml.
+    data = yaml.safe_load(payload.message)
+    return {"notice": NOTICE, "cwe": "CWE-502 mitigated", "parsed": str(data)}
 
 
 @router.post("/secure/yaml")

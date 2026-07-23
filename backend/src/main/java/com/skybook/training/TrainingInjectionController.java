@@ -33,20 +33,21 @@ public class TrainingInjectionController {
     private EntityManager entityManager;
 
     @GetMapping("/insecure/sql")
-    @Operation(summary = "INSECURE: SQL Injection via string concatenation (CWE-89)")
+    @Operation(summary = "FIXED: bound-parameter native query (was CWE-89 string concatenation)")
     public Map<String, Object> insecureSql(@RequestParam String username) {
-        // INTENTIONALLY VULNERABLE — do not copy to production
-        String sql = "SELECT id, username, email FROM users WHERE username = '" + username + "'";
-        Query query = entityManager.createNativeQuery(sql);
+        // Remediated (AI SAST CWE-89): bind the parameter instead of concatenating into the SQL string.
+        Query query = entityManager.createNativeQuery(
+                "SELECT id, username, email FROM users WHERE username = :username"
+        );
+        query.setParameter("username", username);
         @SuppressWarnings("unchecked")
         List<Object[]> rows = query.getResultList();
         return Map.of(
                 "notice", TrainingMarkers.NOTICE,
-                "cwe", "CWE-89",
+                "cwe", "CWE-89 mitigated",
                 "owasp", "A03:2021 Injection",
-                "query", sql,
                 "rowCount", rows.size(),
-                "hint", "Compare with /secure/sql which uses a bound parameter"
+                "hint", "Now matches /secure/sql — bound parameter, no string concatenation"
         );
     }
 
@@ -67,10 +68,16 @@ public class TrainingInjectionController {
     }
 
     @GetMapping(value = "/insecure/command", produces = MediaType.TEXT_PLAIN_VALUE)
-    @Operation(summary = "INSECURE: OS command built from user input (CWE-78)")
+    @Operation(summary = "FIXED: allowlisted host + argument array (was CWE-78 string-built command)")
     public String insecureCommand(@RequestParam String host) throws Exception {
-        // INTENTIONALLY VULNERABLE — do not copy to production
-        Process process = Runtime.getRuntime().exec("ping -c 1 " + host);
+        // Remediated (AI SAST CWE-78): allowlist the host and pass argv directly, no
+        // string-built command, matching /secure/command.
+        if (!ALLOWED_HOSTS.contains(host)) {
+            return "Rejected host (allowlist only): " + ALLOWED_HOSTS;
+        }
+        ProcessBuilder pb = new ProcessBuilder("ping", "-c", "1", host);
+        pb.redirectErrorStream(true);
+        Process process = pb.start();
         return new String(process.getInputStream().readAllBytes());
     }
 
