@@ -69,8 +69,12 @@ public class TrainingInjectionController {
     @GetMapping(value = "/insecure/command", produces = MediaType.TEXT_PLAIN_VALUE)
     @Operation(summary = "INSECURE: OS command built from user input (CWE-78)")
     public String insecureCommand(@RequestParam String host) throws Exception {
-        // INTENTIONALLY VULNERABLE — do not copy to production
-        Process process = Runtime.getRuntime().exec("ping -c 1 " + host);
+        if (!ALLOWED_HOSTS.contains(host)) {
+            return "Rejected host (allowlist only): " + ALLOWED_HOSTS;
+        }
+        ProcessBuilder pb = new ProcessBuilder("ping", "-c", "1", host);
+        pb.redirectErrorStream(true);
+        Process process = pb.start();
         return new String(process.getInputStream().readAllBytes());
     }
 
