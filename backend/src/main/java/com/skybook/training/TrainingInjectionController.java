@@ -67,18 +67,27 @@ public class TrainingInjectionController {
     }
 
     @GetMapping(value = "/insecure/command", produces = MediaType.TEXT_PLAIN_VALUE)
-    @Operation(summary = "INSECURE: OS command built from user input (CWE-78)")
+    @Operation(summary = "REMEDIATED (CWE-78): allowlisted host + argument array (no shell)")
     public String insecureCommand(@RequestParam String host) throws Exception {
-        // INTENTIONALLY VULNERABLE — do not copy to production
-        Process process = Runtime.getRuntime().exec("ping -c 1 " + host);
-        return new String(process.getInputStream().readAllBytes());
+        // Remediated: the request parameter is validated against an allowlist and passed
+        // as a discrete process argument, so it is never interpreted as command syntax.
+        return pingAllowlistedHost(host);
     }
 
     @GetMapping(value = "/secure/command", produces = MediaType.TEXT_PLAIN_VALUE)
     @PreAuthorize("hasAnyRole('ADMIN','CUSTOMER')")
     @Operation(summary = "SECURE: allowlisted host + argument array (no shell)")
     public String secureCommand(@RequestParam String host) throws Exception {
-        if (!ALLOWED_HOSTS.contains(host)) {
+        return pingAllowlistedHost(host);
+    }
+
+    /**
+     * Runs a single ping against an allowlisted host without a shell.
+     * Rejects anything outside {@link #ALLOWED_HOSTS} so untrusted input can never
+     * reach a command interpreter.
+     */
+    private String pingAllowlistedHost(String host) throws Exception {
+        if (host == null || !ALLOWED_HOSTS.contains(host)) {
             return "Rejected host (allowlist only): " + ALLOWED_HOSTS;
         }
         ProcessBuilder pb = new ProcessBuilder("ping", "-c", "1", host);
